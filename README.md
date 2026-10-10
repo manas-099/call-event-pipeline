@@ -22,7 +22,7 @@ between the event source (FastAPI producer) and downstream processors.
         +--> [consumer_aggregator]  group: aggregator-group  -> counts dispositions per bot
 ```
 See architecture diagram below (also available as call_event_pipeline_lifecycle.svg)
-![Call Event Pipeline Architecture](call_event_pipeline_lifecycle.svg)
+![Call Event Pipeline Architecture](call_event_pipeline_lifecycle_v2.svg)
 
 
 ## How it works

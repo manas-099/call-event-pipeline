@@ -22,7 +22,29 @@ between the event source (FastAPI producer) and downstream processors.
         +--> [consumer_aggregator]  group: aggregator-group  -> counts dispositions per bot
 ```
 See architecture diagram below (also available as call_event_pipeline_lifecycle.svg)
-![Call Event Pipeline Architecture](call_event_pipeline_lifecycle_v2.svg)
+<!-- ![Call Event Pipeline Architecture](call_event_pipeline_lifecycle_v2.svg) -->
+
+```
+[Customer]  ──calls──►  [Voice Bot]  ──event──►  [FastAPI Producer]
+                         STT→LLM→TTS               POST /event
+                                                        │
+                                                        ▼
+                                    ┌───────────────────────────────┐
+                                    │   Kafka  ·  localhost:9092    │
+                                    │      topic: call-events       │
+                                    │                               │
+                                    │  [P0]      [P1]      [P2]    │
+                                    │   key=call_id (ordered)       │
+                                    └────────┬──────────┬───────────┘
+                                             │          │
+                               ┌─────────────┘          └─────────────┐
+                               ▼                                       ▼
+                    ┌─────────────────────┐             ┌──────────────────────────┐
+                    │  consumer_logger    │             │  consumer_aggregator     │
+                    │  logger-group       │             │  aggregator-group        │
+                    │  logs every event   │             │  counts per bot          │
+                    └─────────────────────┘             └──────────────────────────┘
+```
 
 
 ## How it works

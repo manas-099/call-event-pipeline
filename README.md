@@ -21,7 +21,19 @@ between the event source (FastAPI producer) and downstream processors.
         |--> [consumer_logger]      group: logger-group      -> logs every event
         +--> [consumer_aggregator]  group: aggregator-group  -> counts dispositions per bot
 ```
+See architecture diagram below (also available as call_event_pipeline_lifecycle.svg)
+![Call Event Pipeline Architecture](call_event_pipeline_lifecycle.svg)
 
+
+## How it works
+
+1. Customer calls the voice bot (Sarvam/Naadh)
+2. Bot generates a call event (started / ended / disposition)  
+3. FastAPI producer publishes it to Kafka topic `call-events` using `call_id` as key
+4. Kafka routes to a partition — same call_id always lands on same partition (ordered)
+5. consumer_logger (logger-group) reads every message independently → logs to console
+6. consumer_aggregator (aggregator-group) reads same messages → counts dispositions per bot
+7. Both consumers maintain their own offsets — crash safe, replay on restart
 ## Kafka Concepts Covered
 
 | Concept         | Where                                                        |
